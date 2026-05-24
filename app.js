@@ -716,4 +716,303 @@ public:
     bool search(const string& word) {
         TrieNode* node = root;
         for (char c : word) {
-            if (!node->children
+            if (!node->children.count(c)) return false;
+            node = node->children[c];
+        }
+        return node->is_end;
+    }
+    
+    bool startsWith(const string& prefix) {
+        TrieNode* node = root;
+        for (char c : prefix) {
+            if (!node->children.count(c)) return false;
+            node = node->children[c];
+        }
+        return true;
+    }
+};`,
+        tc: ["Insert/Search: O(L)", "Space: O(ALPHABET × N × L)"],
+        problems: ["Implement Trie", "Add and Search Word", "Word Search II", "Replace Words", "Design Search Autocomplete"]
+      }
+    ]
+  },
+  {
+    id: "intervals",
+    icon: "↔",
+    label: "Intervals & Greedy",
+    sub: "Sort first, then sweep",
+    patterns: [
+      {
+        name: "Interval Merging & Scheduling",
+        diff: "medium",
+        when: "Overlapping intervals, meeting rooms, merge intervals, insert interval, minimum platforms.",
+        insight: "Always sort by start time first. Two intervals overlap if start2 <= end1. For scheduling: check if start of next < end of current. Use min-heap for minimum rooms.",
+        template: `# Merge Intervals
+vector<vector<int>> merge(vector<vector<int>>& intervals) {
+    if (intervals.empty()) return {};
+    sort(intervals.begin(), intervals.end());
+    vector<vector<int>> merged = {intervals[0]};
+    for (int i = 1; i < intervals.size(); i++) {
+        if (intervals[i][0] <= merged.back()[1]) {
+            merged.back()[1] = max(merged.back()[1], intervals[i][1]);
+        } else {
+            merged.push_back(intervals[i]);
+        }
+    }
+    return merged;
+}
+
+// Min Meeting Rooms (heap)
+int minMeetingRooms(vector<vector<int>>& intervals) {
+    if (intervals.empty()) return 0;
+    sort(intervals.begin(), intervals.end());
+    priority_queue<int, vector<int>, greater<int>> minHeap;
+    for (const auto& interval : intervals) {
+        if (!minHeap.empty() && minHeap.top() <= interval[0]) {
+            minHeap.pop();
+        }
+        minHeap.push(interval[1]);
+    }
+    return minHeap.size();
+}`,
+        tc: ["Time: O(n log n)", "Space: O(n)"],
+        problems: ["Merge Intervals", "Insert Interval", "Meeting Rooms II", "Non-overlapping Intervals", "Minimum Interval to Include Each Query"]
+      },
+      {
+        name: "Greedy Algorithms",
+        diff: "hard",
+        when: "Locally optimal choice leads to globally optimal. Jump game, gas station, task scheduler, candy distribution.",
+        insight: "Prove greedy works: exchange argument (swapping greedy choice with any other doesn't improve the answer). If greedy doesn't work, use DP.",
+        template: `// Jump Game II — greedy
+int jump(const vector<int>& nums) {
+    int jumps = 0, farthest = 0, end = 0;
+    for (int i = 0; i < nums.size() - 1; i++) {
+        farthest = max(farthest, i + nums[i]);
+        if (i == end) {
+            jumps++;
+            end = farthest;
+        }
+    }
+    return jumps;
+}
+
+// Gas Station — greedy
+int canCompleteCircuit(const vector<int>& gas, const vector<int>& cost) {
+    int total = 0, curr = 0, start = 0;
+    for (int i = 0; i < gas.size(); i++) {
+        int diff = gas[i] - cost[i];
+        total += diff; curr += diff;
+        if (curr < 0) {
+            start = i + 1;
+            curr = 0;
+        }
+    }
+    return total >= 0 ? start : -1;
+}`,
+        tc: ["Time: O(n)", "Space: O(1)"],
+        problems: ["Jump Game I & II", "Gas Station", "Task Scheduler", "Candy", "Partition Labels"]
+      }
+    ]
+  }
+];
+
+// ── State ──────────────────────────────────────────────────
+let currentTopicId = 'arrays';
+let searchQuery = '';
+
+// ── DOM Refs ───────────────────────────────────────────────
+const navList      = document.getElementById('nav-list');
+const patternsList = document.getElementById('patterns-list');
+const topicTitle   = document.getElementById('topic-title');
+const topicSub     = document.getElementById('topic-subtitle');
+const searchInput  = document.getElementById('search-input');
+const btnExpand    = document.getElementById('btn-expand');
+const btnCollapse  = document.getElementById('btn-collapse');
+
+// ── Build Navigation ───────────────────────────────────────
+function buildNav() {
+  navList.innerHTML = '';
+  topics.forEach(t => {
+    const div = document.createElement('div');
+    div.className = 'nav-item' + (t.id === currentTopicId ? ' active' : '');
+    div.dataset.id = t.id;
+    div.innerHTML = `
+      <span class="nav-icon">${t.icon}</span>
+      ${t.label}
+      <span class="nav-badge">${t.patterns.length}</span>`;
+    div.addEventListener('click', () => {
+      searchInput.value = '';
+      searchQuery = '';
+      loadTopic(t.id);
+    });
+    navList.appendChild(div);
+  });
+}
+
+// ── Load Topic ─────────────────────────────────────────────
+function loadTopic(id) {
+  currentTopicId = id;
+  const topic = topics.find(t => t.id === id);
+
+  // Update nav active state
+  document.querySelectorAll('.nav-item').forEach(el => {
+    el.classList.toggle('active', el.dataset.id === id);
+  });
+
+  topicTitle.textContent = topic.label;
+  topicSub.textContent   = topic.sub;
+
+  renderPatterns(topic.patterns);
+}
+
+// ── Render Patterns ────────────────────────────────────────
+function renderPatterns(patterns) {
+  patternsList.innerHTML = '';
+
+  if (patterns.length === 0) {
+    patternsList.innerHTML = '<div class="no-results">No patterns found. Try a different search.</div>';
+    return;
+  }
+
+  patterns.forEach(p => {
+    const card = document.createElement('div');
+    card.className = 'pattern-card';
+    card.dataset.name = p.name.toLowerCase();
+
+    const whenText    = highlight(p.when,    searchQuery);
+    const insightText = highlight(p.insight, searchQuery);
+    const nameText    = highlight(p.name,    searchQuery);
+
+    card.innerHTML = `
+      <div class="pattern-header" role="button" tabindex="0" aria-expanded="false">
+        <div class="pattern-left">
+          <span class="diff-badge diff-${p.diff}">${p.diff}</span>
+          <span class="pattern-name">${nameText}</span>
+        </div>
+        <span class="chevron">▾</span>
+      </div>
+      <div class="pattern-body">
+        <div class="section-label">When to use</div>
+        <div class="insight-box">${whenText}</div>
+
+        <div class="section-label">Key insight</div>
+        <div class="insight-box">${insightText}</div>
+
+        <div class="section-label">Template code</div>
+        <div class="code-wrap">
+          <button class="copy-btn" data-code="${escapeAttr(p.template)}">Copy</button>
+          <pre class="code-block">${escapeHtml(p.template)}</pre>
+        </div>
+
+        <div class="section-label">Complexity</div>
+        <div class="tc-row">${p.tc.map(t => `<span class="tc-chip">${t}</span>`).join('')}</div>
+
+        <div class="section-label">Must-solve problems</div>
+        <div class="problems-row">${p.problems.map(prob =>
+          `<a class="prob-tag" href="https://leetcode.com/problemset/?search=${encodeURIComponent(prob)}" target="_blank" rel="noopener">${prob}</a>`
+        ).join('')}</div>
+      </div>`;
+
+    // Toggle expand/collapse
+    const header = card.querySelector('.pattern-header');
+    header.addEventListener('click', () => toggleCard(card));
+    header.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') toggleCard(card); });
+
+    // Copy button
+    card.querySelector('.copy-btn').addEventListener('click', e => {
+      e.stopPropagation();
+      const code = e.target.dataset.code;
+      navigator.clipboard.writeText(code).then(() => {
+        e.target.textContent = 'Copied!';
+        e.target.classList.add('copied');
+        setTimeout(() => {
+          e.target.textContent = 'Copy';
+          e.target.classList.remove('copied');
+        }, 2000);
+      });
+    });
+
+    patternsList.appendChild(card);
+  });
+}
+
+function toggleCard(card) {
+  const body    = card.querySelector('.pattern-body');
+  const chevron = card.querySelector('.chevron');
+  const header  = card.querySelector('.pattern-header');
+  const isOpen  = body.classList.contains('open');
+  body.classList.toggle('open', !isOpen);
+  chevron.classList.toggle('open', !isOpen);
+  card.classList.toggle('expanded', !isOpen);
+  header.setAttribute('aria-expanded', String(!isOpen));
+}
+
+// ── Expand / Collapse All ──────────────────────────────────
+btnExpand.addEventListener('click', () => {
+  document.querySelectorAll('.pattern-card').forEach(card => {
+    card.querySelector('.pattern-body').classList.add('open');
+    card.querySelector('.chevron').classList.add('open');
+    card.classList.add('expanded');
+    card.querySelector('.pattern-header').setAttribute('aria-expanded', 'true');
+  });
+});
+
+btnCollapse.addEventListener('click', () => {
+  document.querySelectorAll('.pattern-card').forEach(card => {
+    card.querySelector('.pattern-body').classList.remove('open');
+    card.querySelector('.chevron').classList.remove('open');
+    card.classList.remove('expanded');
+    card.querySelector('.pattern-header').setAttribute('aria-expanded', 'false');
+  });
+});
+
+// ── Search ─────────────────────────────────────────────────
+searchInput.addEventListener('input', () => {
+  searchQuery = searchInput.value.trim().toLowerCase();
+
+  if (!searchQuery) {
+    loadTopic(currentTopicId);
+    return;
+  }
+
+  // Search across ALL topics
+  const matched = [];
+  topics.forEach(topic => {
+    topic.patterns.forEach(p => {
+      const haystack = (p.name + p.when + p.insight + p.problems.join(' ')).toLowerCase();
+      if (haystack.includes(searchQuery)) matched.push(p);
+    });
+  });
+
+  topicTitle.textContent = `Search: "${searchInput.value}"`;
+  topicSub.textContent   = `${matched.length} pattern${matched.length !== 1 ? 's' : ''} found across all topics`;
+  renderPatterns(matched);
+});
+
+// ── Helpers ────────────────────────────────────────────────
+function escapeHtml(str) {
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+}
+
+// Enhanced for C++ angle brackets formatting inside HTML tag attributes
+function escapeAttr(str) {
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/"/g, '&quot;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+}
+
+function highlight(text, query) {
+  if (!query) return text;
+  const escaped = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const re = new RegExp(`(${escaped})`, 'gi');
+  return text.replace(re, '<mark class="highlight">$1</mark>');
+}
+
+// ── Init ───────────────────────────────────────────────────
+buildNav();
+loadTopic('arrays');
