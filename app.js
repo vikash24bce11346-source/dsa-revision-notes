@@ -1,5 +1,5 @@
 // ============================================================
-//  DSA FAANG Revision Notes — app.js (C++ Edition)
+//  DSA FAANG Revision Notes — app.js
 // ============================================================
 
 const topics = [
@@ -251,7 +251,7 @@ int pathSum(TreeNode* node, int target) {
         name: "BFS / Level Order",
         diff: "easy",
         when: "Shortest path in unweighted tree/graph, level-by-level processing, min depth, right side view.",
-        insight: "Use a queue. Process level by level using the queue size at the start of each iteration. Always pop from front, push to back.",
+        insight: "Use a deque. Process level by level using the queue size at the start of each iteration. Always pop from left, append to right.",
         template: `vector<vector<int>> levelOrder(TreeNode* root) {
     if (root == nullptr) return {};
     vector<vector<int>> result;
@@ -747,7 +747,7 @@ public:
         diff: "medium",
         when: "Overlapping intervals, meeting rooms, merge intervals, insert interval, minimum platforms.",
         insight: "Always sort by start time first. Two intervals overlap if start2 <= end1. For scheduling: check if start of next < end of current. Use min-heap for minimum rooms.",
-        template: `# Merge Intervals
+        template: `// Merge Intervals
 vector<vector<int>> merge(vector<vector<int>>& intervals) {
     if (intervals.empty()) return {};
     sort(intervals.begin(), intervals.end());
@@ -997,7 +997,6 @@ function escapeHtml(str) {
     .replace(/>/g, '&gt;');
 }
 
-// Enhanced for C++ angle brackets formatting inside HTML tag attributes
 function escapeAttr(str) {
   return str
     .replace(/&/g, '&amp;')
