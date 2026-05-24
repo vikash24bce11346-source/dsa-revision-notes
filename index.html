@@ -1,57 +1,111 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>DSA FAANG Revision Notes</title>
-  <link rel="stylesheet" href="style.css" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Syne:wght@400;500;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DSA Vault - C++</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-  <div class="app-shell">
+<div class="container">
 
-    <!-- Sidebar -->
-    <nav class="sidebar" id="sidebar">
-      <div class="sidebar-top">
-        <div class="logo">
-          <span class="logo-icon">&#9641;</span>
-          <div>
-            <div class="logo-title">DSA Vault</div>
-            <div class="logo-sub">FAANG Revision Notes</div>
-          </div>
-        </div>
-        <div class="search-wrap">
-          <span class="search-icon">&#128269;</span>
-          <input type="text" id="search-input" class="search-input" placeholder="Search patterns..." autocomplete="off" />
-        </div>
+  <aside class="sidebar">
+    <h1>DSA Vault</h1>
+    <p class="sub">FAANG C++ Revision Notes</p>
+
+    <div class="topic active">Arrays & Strings</div>
+    <div class="topic">Binary Search</div>
+    <div class="topic">Linked List</div>
+    <div class="topic">Trees</div>
+    <div class="topic">Graphs</div>
+    <div class="topic">Dynamic Programming</div>
+  </aside>
+
+  <main class="content">
+
+    <div class="card">
+
+      <div class="header">
+        <span class="badge">Easy</span>
+        <h2>Two Pointers</h2>
       </div>
-      <div class="nav-section-label">Topics</div>
-      <div id="nav-list" class="nav-list"></div>
-      <div class="sidebar-footer">
-        <div class="footer-note">&#9889; Click any pattern to expand</div>
+
+      <p class="desc">
+        Used in sorted arrays and pair finding problems.
+      </p>
+
+<pre><code>
+void twoPointers(vector<int>& arr) {
+
+    int l = 0;
+    int r = arr.size() - 1;
+
+    while (l < r) {
+
+        if (condition_met(arr[l], arr[r])) {
+            l++;
+            r--;
+        }
+        else if (need_larger) {
+            l++;
+        }
+        else {
+            r--;
+        }
+    }
+}
+</code></pre>
+
+    </div>
+
+    <div class="card">
+
+      <div class="header">
+        <span class="badge medium">Medium</span>
+        <h2>Sliding Window</h2>
       </div>
-    </nav>
 
-    <!-- Main Content -->
-    <main class="content" id="content">
-      <div class="content-header">
-        <div>
-          <h1 class="topic-title" id="topic-title"></h1>
-          <p class="topic-subtitle" id="topic-subtitle"></p>
-        </div>
-        <div class="header-actions">
-          <button class="btn-expand-all" id="btn-expand">Expand All</button>
-          <button class="btn-collapse-all" id="btn-collapse">Collapse All</button>
-        </div>
-      </div>
-      <div id="patterns-list" class="patterns-list"></div>
-    </main>
+      <p class="desc">
+        Used in substring and subarray problems.
+      </p>
 
-  </div>
+<pre><code>
+int slidingWindow(string s) {
 
-  <script src="app.js"></script>
+    int l = 0;
+    int best = 0;
+
+    unordered_map<char,int> freq;
+
+    for (int r = 0; r < s.size(); r++) {
+
+        freq[s[r]]++;
+
+        while (window_invalid(freq)) {
+
+            freq[s[l]]--;
+
+            if (freq[s[l]] == 0)
+                freq.erase(s[l]);
+
+            l++;
+        }
+
+        best = max(best, r - l + 1);
+    }
+
+    return best;
+}
+</code></pre>
+
+    </div>
+
+  </main>
+
+</div>
+
+<script src="app.js"></script>
 </body>
 </html>
