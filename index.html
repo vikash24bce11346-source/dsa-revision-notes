@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DSA FAANG Revision Notes</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Syne:wght@400;500;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+  <div class="app-shell">
+
+    <!-- Sidebar -->
+    <nav class="sidebar" id="sidebar">
+      <div class="sidebar-top">
+        <div class="logo">
+          <span class="logo-icon">&#9641;</span>
+          <div>
+            <div class="logo-title">DSA Vault</div>
+            <div class="logo-sub">FAANG Revision Notes</div>
+          </div>
+        </div>
+        <div class="search-wrap">
+          <span class="search-icon">&#128269;</span>
+          <input type="text" id="search-input" class="search-input" placeholder="Search patterns..." autocomplete="off" />
+        </div>
+      </div>
+      <div class="nav-section-label">Topics</div>
+      <div id="nav-list" class="nav-list"></div>
+      <div class="sidebar-footer">
+        <div class="footer-note">&#9889; Click any pattern to expand</div>
+      </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="content" id="content">
+      <div class="content-header">
+        <div>
+          <h1 class="topic-title" id="topic-title"></h1>
+          <p class="topic-subtitle" id="topic-subtitle"></p>
+        </div>
+        <div class="header-actions">
+          <button class="btn-expand-all" id="btn-expand">Expand All</button>
+          <button class="btn-collapse-all" id="btn-collapse">Collapse All</button>
+        </div>
+      </div>
+      <div id="patterns-list" class="patterns-list"></div>
+    </main>
+
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
